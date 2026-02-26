@@ -3,7 +3,7 @@ mod audio;
 mod visual;
 
 use analysis::Analyzer;
-use audio::{AudioData, AudioPlayer, MicCapture};
+use audio::{AudioData, AudioPlayer, MicCapture, UrlStream};
 use clap::{Parser, Subcommand};
 use nannou::prelude::*;
 use visual::RadialVisualizer;
@@ -13,7 +13,7 @@ const BARS: usize = 120;
 const DEFAULT_WAV: &str = "assets/song.wav";
 
 #[derive(Parser)]
-#[command(about = "Audio visualizer — mic or WAV file")]
+#[command(about = "Audio visualizer — mic, WAV file, or YouTube URL")]
 struct Cli {
     #[command(subcommand)]
     mode: Option<Mode>,
@@ -29,14 +29,18 @@ enum Mode {
         #[arg(default_value = DEFAULT_WAV)]
         file: String,
     },
+    /// Visualize audio from a YouTube (or any yt-dlp-supported) URL
+    /// Requires: brew install yt-dlp ffmpeg
+    Url {
+        /// URL to stream audio from
+        url: String,
+    },
 }
 
 enum AudioSource {
     Mic(MicCapture),
-    Wav {
-        audio: AudioData,
-        player: AudioPlayer,
-    },
+    Wav { audio: AudioData, player: AudioPlayer },
+    Url(UrlStream),
 }
 
 impl AudioSource {
@@ -46,6 +50,7 @@ impl AudioSource {
             Self::Wav { audio, player } => {
                 audio.window_at_time(player.elapsed_secs(), fft_size, scratch)
             }
+            Self::Url(stream) => stream.read_window(scratch, fft_size),
         }
     }
 
@@ -53,6 +58,7 @@ impl AudioSource {
         match self {
             Self::Mic(mic) => mic.sample_rate,
             Self::Wav { audio, .. } => audio.sample_rate,
+            Self::Url(stream) => stream.sample_rate,
         }
     }
 }
@@ -85,6 +91,11 @@ fn model(app: &App) -> Model {
             let audio = AudioData::load_wav(&file).expect("Failed to load WAV");
             let player = AudioPlayer::start(&file);
             AudioSource::Wav { audio, player }
+        }
+        Mode::Url { url } => {
+            let stream = UrlStream::start(&url, FFT_SIZE)
+                .expect("Failed to start URL stream — is yt-dlp and ffmpeg installed?");
+            AudioSource::Url(stream)
         }
     };
 

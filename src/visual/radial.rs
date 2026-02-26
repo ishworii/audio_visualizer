@@ -36,21 +36,21 @@ impl RadialVisualizer {
             .color(srgba(0.0, 0.0, 0.0, self.fade_alpha));
 
         let hue = (self.hue_base + bass_smooth * self.hue_range).fract();
-        let radius = self.base_radius + bass_fast * self.pulse_gain;
+        let radius = (self.base_radius + bass_fast * self.pulse_gain).clamp(0.0, 350.0);
 
         //glow intensity
         let glow = (0.15 + bass_smooth * 0.35).clamp(0.12, 0.55);
 
-        let B = self.bars as f32;
+        let bars_f = self.bars as f32;
         for (i, &v) in bands.iter().take(self.bars).enumerate() {
-            let theta = (i as f32 / B) * TAU;
+            let theta = (i as f32 / bars_f) * TAU;
             let dir = vec2(theta.cos(), theta.sin());
 
-            let len = (v * self.bar_gain).clamp(0.0, 520.0);
+            let len = (v * self.bar_gain).clamp(0.0, 480.0 - radius);
             let p0 = dir * radius;
             let p1 = dir * (radius + len);
 
-            let h = (hue + (i as f32 / B) * 0.08).fract();
+            let h = (hue + (i as f32 / bars_f) * 0.08).fract();
 
             //outer glow
             draw.line()

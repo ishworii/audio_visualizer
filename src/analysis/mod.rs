@@ -1,3 +1,3 @@
 pub mod analyzer;
 
-pub use analyzer::{AnalysisFrame, Analyzer};
+pub use analyzer::Analyzer;

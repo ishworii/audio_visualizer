@@ -35,8 +35,8 @@ impl Analyzer {
         let hann = (0..fft_size)
             .map(|n| {
                 let n = n as f32;
-                let N = (fft_size - 1) as f32;
-                0.5 * (1.0 - (2.0 * std::f32::consts::PI * n / N).cos())
+                let n_max = (fft_size - 1) as f32;
+                0.5 * (1.0 - (2.0 * std::f32::consts::PI * n / n_max).cos())
             })
             .collect::<Vec<_>>();
         let half = fft_size / 2;
@@ -77,11 +77,12 @@ impl Analyzer {
         //fft in-place and fft out
         self.fft.process(&mut self.fft_out);
 
-        //magnitudes for 0..N/2
+        //magnitudes for 0..N/2, normalized by fft_size so values stay in ~[0,1]
         let half = self.fft_size / 2;
+        let norm = 1.0 / (self.fft_size as f32 * 0.5);
         for i in 0..half {
             let c = self.fft_out[i];
-            let mag = (c.re * c.re + c.im * c.im).sqrt();
+            let mag = (c.re * c.re + c.im * c.im).sqrt() * norm;
             self.magnitues[i] = mag;
         }
 

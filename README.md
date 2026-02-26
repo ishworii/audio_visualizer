@@ -2,7 +2,12 @@
 
 A real-time audio visualizer written in Rust. Supports microphone input, local WAV files, and streaming audio from YouTube (or any site yt-dlp supports).
 
-![demo](assets/demo.mp4)
+![demo]([assets/demo.mp4](https://github.com/user-attachments/assets/a1700aa8-f89d-49b7-bdb2-1c4fb8d6a063))
+
+
+
+
+
 
 ## Features
 

@@ -17,10 +17,10 @@ impl RadialVisualizer {
         Self {
             bars,
             base_radius: 100.0,
-            bar_gain: 180.0,
+            bar_gain: 400.0,
 
-            hue_base: 0.58,
-            hue_range: 0.20,
+            hue_base: 0.0,
+            hue_range: 0.30,
             pulse_gain: 60.0,
 
             fade_alpha: 0.12,
@@ -50,7 +50,7 @@ impl RadialVisualizer {
             let p0 = dir * radius;
             let p1 = dir * (radius + len);
 
-            let h = (hue + (i as f32 / bars_f) * 0.08).fract();
+            let h = (hue + (i as f32 / bars_f) * 1.0).fract();
 
             //outer glow
             draw.line()

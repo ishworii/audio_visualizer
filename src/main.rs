@@ -39,7 +39,10 @@ enum Mode {
 
 enum AudioSource {
     Mic(MicCapture),
-    Wav { audio: AudioData, player: AudioPlayer },
+    Wav {
+        audio: AudioData,
+        player: AudioPlayer,
+    },
     Url(UrlStream),
 }
 
@@ -62,7 +65,6 @@ impl AudioSource {
         }
     }
 }
-
 
 struct Model {
     source: AudioSource,

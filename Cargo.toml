@@ -4,3 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+nannou="0.19"
+hound="3.5"
+rustfft="6"
+anyhow="1"
